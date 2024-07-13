@@ -7,11 +7,15 @@ import SignIn from './Pages/SignIn'
 import SignUp from './Pages/SignUp'
 import Projects from './Pages/Projects'
 import Dashboard from './Pages/Dashboard'
+import Header from './Components/Header'
+
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Header/> {/* this is the position for the header, so that it will appear in all of the following pages */}
       <Routes>
+        {/* all the pages within the website are implemented below */}
         <Route path="/" element={<Home/>} />
         <Route path="/about" element={<About/>} /> 
         <Route path="/sign-in" element={<SignIn/>} />
