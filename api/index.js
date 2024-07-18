@@ -1,4 +1,11 @@
 import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv'
+
+dotenv.config();
+
+//mongoose.connect() method is used to connect to the databsse.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
+mongoose.connect(process.env.MONGO).then(() => { console.log('Mongodb is connected');}).catch(err=> {console.log(err);})   
 
 const app = express();   //to create the application
 
