@@ -1,7 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv'
-
+import dotenv from 'dotenv';
+import userRoutes from './routes/user.route.js';
+ 
 dotenv.config();
 
 //mongoose.connect() method is used to connect to the databsse.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
@@ -22,3 +23,7 @@ app.listen( 3000, () => {
 //then add a script for that in package.json as below;
 //                  "dev": "nodemon api/index.js"   , to run it use npm run dev in the console. it will detected the changes we make and automatically restart the server.
 //                  "start": "node api/index.js"    , for when we need to run the application as we'll be doing that using node
+
+
+//using the get request from 'user.route.js' using 'userRoutes'
+app.use('/api/user', userRoutes);
