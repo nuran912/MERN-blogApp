@@ -2,13 +2,17 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js'
  
 dotenv.config();
 
-//mongoose.connect() method is used to connect to the databsse.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
+//mongoose.connect() method is used to connect to the database.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
 mongoose.connect(process.env.MONGO).then(() => { console.log('Mongodb is connected');}).catch(err=> {console.log(err);})   
 
 const app = express();   //to create the application
+
+//this will allow json as inputs in the backend
+app.use(express.json());
 
 //listen to port 3000, that's where the server is running(can be 3000 or any other)
 app.listen( 3000, () => {
@@ -25,5 +29,7 @@ app.listen( 3000, () => {
 //                  "start": "node api/index.js"    , for when we need to run the application as we'll be doing that using node
 
 
-//using the get request from 'user.route.js' using 'userRoutes'
+//using the 'use' method cus we're getting the 'get' request from 'user.route.js' using 'userRoutes'
 app.use('/api/user', userRoutes);
+
+app.use('/api/auth', authRoutes)

@@ -1,3 +1,5 @@
+//we create the user model here for the database
+
 import mongoose from 'mongoose'
 
 //user schema is a set of rules we set for the user
@@ -17,7 +19,7 @@ const userSchema = new mongoose.Schema({
         require: true,
         unique: false,
     }
-}, {timeStamp: true}    //to save time of creation and time of update when creating users.
+}, {timestamps: true}    //to save time of creation and time of update when creating users.
 )
 
 //to create the model. 'User' is the name of the model.

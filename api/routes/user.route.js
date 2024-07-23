@@ -1,4 +1,5 @@
 import express from 'express';
+//need to import express in order to create route
 import { test } from '../controllers/user.controller.js';
 
 const router = express.Router();
@@ -9,3 +10,6 @@ router.get('/test', test);
 //in the browser, type the url localhost:3000/test to see the api message 
 
 export default router;
+
+//the best practice in backend development is to create a route file for each route section.
+//for example, routes folder contains these routes as files for various routes such as user, auth, etc.
