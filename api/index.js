@@ -31,5 +31,15 @@ app.listen( 3000, () => {
 
 //using the 'use' method cus we're getting the 'get' request from 'user.route.js' using 'userRoutes'
 app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 
-app.use('/api/auth', authRoutes)
+//this middleware gives us: error we get from the input,request(sending info),response(getting info),next(the next middleware).
+app.use((err, req, res, next ) => {
+    const statusCode = err.statusCode || 500;   //the status code we get from the error OR 500(if there is not status code from error)
+    const message = err.message || 'Internal server error';
+    res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+    })
+});
