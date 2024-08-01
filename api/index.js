@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.route.js'
 dotenv.config();
 
 //mongoose.connect() method is used to connect to the database.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
+//process.env.MONGO is used in place of the URI that we hid within .env
 mongoose.connect(process.env.MONGO).then(() => { console.log('Mongodb is connected');}).catch(err=> {console.log(err);})   
 
 const app = express();   //to create the application
