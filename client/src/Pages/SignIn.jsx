@@ -1,13 +1,17 @@
 import {Link, useNavigate} from 'react-router-dom';
 import {Button, Label, TextInput, Alert, Spinner} from 'flowbite-react';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';  //useDispatch is used to dispatch the logic we get from userSlice.js
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
 
 export default function SignIn() {
 
-  const [formData,setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);  //for when the page is loading
   const navigate = useNavigate();
+  const [formData,setFormData] = useState({});
+  //const [errorMessage, setErrorMessage] = useState(null);
+  //const [loading, setLoading] = useState(false);  //for when the page is loading
+  const { loading, error: errorMessage } = useSelector(state => state.user);//useSelector is used to get the 'userSlice' information 
+  const dispatch = useDispatch(); //dispatch will be used for the logic imported from userSlice.js
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.id]: e.target.value.trim()})  //if trim() used whitespaces won't be recorded 
@@ -17,31 +21,38 @@ export default function SignIn() {
     e.preventDefault(); //to prevent the page from refreshing upon submission by default
     //to prompt an error if a some part of the form is not filled
     if(!formData.email || !formData.password){
-      return setErrorMessage(('please fill out all fields'))
+      //return setErrorMessage(('please fill out all fields'))
+      return dispatch(signInFailure('please fill out all fields'));
     }
     try{
+      /*
       setLoading(true); //loading phase is set to true when the try starts
       setErrorMessage(null);  //to cleanup the error message if there's one from the previous instance
-      //this will be used to submit our application⬇️
+      ⬆️instead of these we can dispatch the signInStarts logic we defined in userSlice.js
+      */
+      dispatch(signInStart());  //instead of⬆️
+      //this will be used to submit our form⬇️
       const res = await fetch('/api/auth/signin', {  //fetch method is used to fetch data
         method: 'POST',
         headers: {'content-Type': 'application/json'},
         body: JSON.stringify(formData), //stringify cuz we can't directly send json
       });
       const data = await res.json();
-      //to get an error when an already existing username is entered⬇️
-      if(data.success == false){
-        setLoading(false);
-        return setErrorMessage(data.message);
+      //if sign in unsuccessful⬇️ 
+      if(data.success === false){
+        //setLoading(false);
+        //return setErrorMessage(data.message); instead of both this and above one we can use ⬇️ 
+        dispatch(signInFailure(data.message));
       }
-      setLoading(false) //if there's no error and everything is fine loading phase will end
       if(res.ok){
+        dispatch(signInSuccess(data))
         navigate('/');
       }
     }catch(error){
       //for example, when the user's internet is slow⬇️
-      setErrorMessage(error.message);
-      setLoading(false); //if there's an error, loading phase will end
+      //setErrorMessage(error.message);
+      //setLoading(false); //if there's an error, loading phase will end
+      dispatch(signInFailure(error.message));
     }
   }
   return (

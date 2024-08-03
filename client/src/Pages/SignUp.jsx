@@ -30,7 +30,7 @@ export default function SignUp() {
       });
       const data = await res.json();
       //to get an error when an already existing username is entered⬇️
-      if(data.success == false){
+      if(data.success === false){
         setLoading(false);
         return setErrorMessage(data.message);
       }
