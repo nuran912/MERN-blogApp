@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import bcryptjs from 'bcryptjs';    //bcrypt is a package used for password hashing(installed in the backend using 'npm i bcrypt')
+import bcryptjs from 'bcryptjs';    //bcrypt is a package/library used for password hashing(installed in the backend using 'npm i bcrypt')
 import { errorHandler } from "../utils/error.js";
 import jwt from 'jsonwebtoken'; //jsonwebtoken is a package used for token generation(installed in the backend using 'npm i jsonwebtoken')
 
@@ -14,7 +14,9 @@ export const signup = async (req,res,next) => { //next is used for error handlin
         next(errorHandler(400, 'All fields are required'));        // instead of this: return res.status(400).json({message: "All fields are required"});
     }
 
-    //here we encrypt the 'password' using a hashing function. 10 is
+    //here we encrypt the 'password' using a hashing function. 
+    //hashSync hashes the 'password' synchronously
+    //10 is the no. of salt rounds(higher the number means more iteration of hashing which means more security but more computational time)
     const hashedPassword = bcryptjs.hashSync(password, 10);
 
     //to create a new user; we import 'User' model from user.model.js
@@ -79,5 +81,41 @@ export const signin = async (req,res,next) => {
         //{httpOnly: true} is to make the cookie secure. we add a json to send back the user info using validUser to add it to our redux toolkit.
     } catch(error) {
         next(error);
+    }
+}
+
+export const google = async (req,res,next) => {
+    //get email,name,profile pic URl from the body
+    const {email, name, googlePhotoURL} = req.body;
+
+    try {
+        //to check if the user exists or not
+        const user = await User.findOne({email});
+        if(user){
+            const token = jwt.sign({id: user._id}, process.env.JWT_SECRET); //creating  the token
+            const {password, ...rest} = user._doc;  //to seperate the password and the rest
+            res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest);
+        }else{  
+            /*
+            If user(email) doesn't exist. we need to create a new user. We already have the username/email. [user model requires username,email and password]
+            But we don't have the password. So we make a random password when creating the profile(user can change this afterwards).
+            Math.random() generates a random number, toString(36) -> 36 means we get numbers(0-9)+letters(a-z) , slice(-8) to get only the last 8 characters
+            */
+            const generatedPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+            const newUser = new User({
+                //name=> Nuran Alwis . we convert it to eg: nuranalwis8362
+                username: name.toLowerCase().split(' ').join('')+Math.random().toString(9).slice(-4),
+                email,
+                password: hashedPassword,
+                profilePicture: googlePhotoURL
+            });
+            await newUser.save()    //save newUser in the db
+            const token = jwt.sign({id: newUser._id}, process.env.JWT_SECRET);
+            const { password, ...rest} = newUser._doc;
+            res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest);
+        }
+    } catch (error) {
+        next(error)
     }
 }
