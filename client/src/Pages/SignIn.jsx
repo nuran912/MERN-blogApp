@@ -3,6 +3,7 @@ import {Button, Label, TextInput, Alert, Spinner} from 'flowbite-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';  //useDispatch is used to dispatch the logic we get from userSlice.js
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
+import OAuth from '../Components/OAuth';
 
 export default function SignIn() {
 
@@ -93,6 +94,7 @@ export default function SignIn() {
               ) : 'Sign In'
               }
             </Button>
+            <OAuth/>
           </form>
           <div className='flex gap-2 text-sm mt-5'>
             <span>Don't have an account?</span>
