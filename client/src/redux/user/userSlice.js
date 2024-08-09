@@ -27,7 +27,7 @@ const userSlice = createSlice({
     }
 })
 
-//the logic needs to be exported inorder to be used elsewhere
+//the logic needs to be exported in order to be used elsewhere
 export const { signInStart, signInSuccess, signInFailure } = userSlice.actions;  
 
-export default userSlice.reducer;
+export default userSlice.reducer;   //reducer is exported nd added to store.js

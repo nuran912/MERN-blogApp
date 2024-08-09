@@ -2,13 +2,16 @@ import { Navbar, TextInput, Button, Dropdown, Avatar } from 'flowbite-react'
 //Link redirects you to page but without redirecting it. In this case it'll redirect to the home page("/" is the path of Home)
 import { Link, useLocation } from 'react-router-dom'
 import { AiOutlineSearch } from 'react-icons/ai' //react-icons package was installed from the terminal using npm i react-icons
-import { FaMoon } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
+import { FaMoon, FaSun } from 'react-icons/fa'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleTheme } from '../redux/theme/themeSlice'
 
 export default function Header() {
 
-    const path = useLocation().pathname
+    const path = useLocation().pathname;
+    const dispatch = useDispatch();
     const { currentUser } = useSelector(state => state.user)    //to get the current user
+    const {theme} = useSelector(state => state.theme)   //to get the current theme
 
   return (
     <Navbar className='border-b-2'>
@@ -35,8 +38,9 @@ export default function Header() {
             <AiOutlineSearch/>
         </Button>
         <div className="flex gap-2 md:order-2">
-            <Button className='w-12 h-10 hidden sm:inline' color='gray' pill>
-                <FaMoon/>
+            <Button className='w-12 h-10 hidden sm:inline' color='gray' pill 
+                onClick={ () => dispatch(toggleTheme())}>   {/*when you click on the button, trigger toggleTheme function*/}
+                    {theme === 'light' ? <FaSun/> : <FaMoon/>}
             </Button>
             { currentUser ? (
                 //if user logged in( currentUse->true), show drop down menu

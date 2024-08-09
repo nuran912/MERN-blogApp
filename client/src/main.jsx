@@ -7,11 +7,14 @@ import './index.css'
 import { store, persistor } from './redux/store.js'
 import { Provider } from 'react-redux'  //Provider is necessary to use store
 import { PersistGate } from 'redux-persist/integration/react' //this is used to cover everything
+import ThemeProvider from './Components/ThemeProvider.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <PersistGate persistor={persistor}>
     <Provider store={store}>  
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </Provider>
   </PersistGate>
 );

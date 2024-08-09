@@ -1,14 +1,16 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import userReducer from './user/userSlice.js'
+import themeReducer from './theme/themeSlice'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 const rootReducer = combineReducers({ //instead of having a lot of reducers, we can use a root reducer as a combination of all the reducers
   user: userReducer,
+  theme: themeReducer,
 });
 
 const persistConfig = {
-  key: 'root', //key is the name bing stored
+  key: 'root', //key is the name being stored
   storage,
   version: 1,
 };
