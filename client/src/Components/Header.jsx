@@ -1,12 +1,14 @@
-import { Navbar, TextInput, Button } from 'flowbite-react'
+import { Navbar, TextInput, Button, Dropdown, Avatar } from 'flowbite-react'
 //Link redirects you to page but without redirecting it. In this case it'll redirect to the home page("/" is the path of Home)
 import { Link, useLocation } from 'react-router-dom'
 import { AiOutlineSearch } from 'react-icons/ai' //react-icons package was installed from the terminal using npm i react-icons
 import { FaMoon } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
 
 export default function Header() {
 
     const path = useLocation().pathname
+    const { currentUser } = useSelector(state => state.user)    //to get the current user
 
   return (
     <Navbar className='border-b-2'>
@@ -36,9 +38,30 @@ export default function Header() {
             <Button className='w-12 h-10 hidden sm:inline' color='gray' pill>
                 <FaMoon/>
             </Button>
-            <Link to='/sign-in'>
+            { currentUser ? (
+                //if user logged in( currentUse->true), show drop down menu
+                <Dropdown 
+                arrowIcon={false} 
+                inline 
+                label={<Avatar alt='user' img={currentUser.profilePicture} rounded/>}
+                >
+                    <Dropdown.Header>
+                        <span className='block text-sm'> @{currentUser.username} </span>
+                        <span className='block text-sm font-medium truncate'> {currentUser.email} </span>
+                    </Dropdown.Header>
+                    <Link to={'/dashboard?tab=profile'}>
+                        <Dropdown.Item>Profile</Dropdown.Item>
+                    </Link>
+                    <Dropdown.Divider/>
+                    <Dropdown.Item>Sign out</Dropdown.Item>
+                </Dropdown>
+                ) :
+                (   //if user not logged in, show signup button
+                <Link to='/sign-in'>
                     <Button gradientDuoTone='greenToBlue' outline>Sign In</Button>  {/* outline: the button will only show the outline until you hover over it */}
-            </Link>
+                </Link>
+                )
+            }
             <Navbar.Toggle/>
         </div>
         <Navbar.Collapse>
