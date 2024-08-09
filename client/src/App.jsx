@@ -9,6 +9,7 @@ import Projects from './Pages/Projects'
 import Dashboard from './Pages/Dashboard'
 import Header from './Components/Header'
 import FooterComp from './Components/Footer'
+import PrivateRoute from './Components/PrivateRoute'
 
 export default function App() {
   return (
@@ -21,7 +22,9 @@ export default function App() {
         <Route path="/sign-in" element={<SignIn/>} />
         <Route path="/sign-up" element={<SignUp/>} />
         <Route path="/projects" element={<Projects/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
+        <Route element={<PrivateRoute/>}> {/*to make the dashboard private*/}
+          <Route path="/dashboard" element={<Dashboard/>} />
+        </Route>
       </Routes>
       <FooterComp/>
     </BrowserRouter>
