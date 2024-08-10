@@ -43,7 +43,7 @@ export default function Header() {
                     {theme === 'light' ? <FaSun/> : <FaMoon/>}
             </Button>
             { currentUser ? (
-                //if user logged in( currentUse->true), show drop down menu
+                //if user logged in( currentUser->true), show drop down menu
                 <Dropdown 
                 arrowIcon={false} 
                 inline 
@@ -78,7 +78,7 @@ export default function Header() {
                 <Navbar.Link active={path === "/projects"} as={'div'}>
                     <Link to='/projects'> Projects </Link>
                 </Navbar.Link>
-            </Navbar.Collapse>
+        </Navbar.Collapse>
     </Navbar>
   )
 }
