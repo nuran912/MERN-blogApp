@@ -1,4 +1,4 @@
-//This code basically inistialized the firebase app
+//This code basically inistializes the firebase app
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";

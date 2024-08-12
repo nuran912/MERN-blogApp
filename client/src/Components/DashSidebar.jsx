@@ -23,7 +23,7 @@ export default function DashSidebar() {
             <Sidebar.ItemGroup>
                 <Link to='/dashboard?tab=profile'>  {/* when profile is clicked, navigate to profile tab */}
                 {/* active only when in the profile tab ⬇️ */}
-                <Sidebar.Item active={tab === 'profile'} icon={HiUser} label={"User"} labelColor='dark'>
+                <Sidebar.Item active={tab === 'profile'} icon={HiUser} label={"User"} labelColor='dark' as='div'>
                     Profile
                 </Sidebar.Item>
                 </Link>
