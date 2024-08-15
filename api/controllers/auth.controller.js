@@ -94,7 +94,7 @@ export const google = async (req,res,next) => {
         if(user){
             const token = jwt.sign({id: user._id}, process.env.JWT_SECRET); //creating  the token
             const {password, ...rest} = user._doc;  //to seperate the password and the rest
-            res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest);
+            res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest); //'access_token' is the name of the cookie
         }else{  
             /*
             If user(email) doesn't exist. we need to create a new user. We already have the username/email. [user model requires username,email and password]

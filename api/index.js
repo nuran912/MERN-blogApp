@@ -2,7 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
-import authRoutes from './routes/auth.route.js'
+import authRoutes from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';   //cookie-parser is installed in the back end using 'npm i cookie-parser' and initialized in this file
  
 dotenv.config();
 
@@ -13,7 +14,8 @@ mongoose.connect(process.env.MONGO).then(() => { console.log('Mongodb is connect
 const app = express();   //to create the application
 
 //this will allow json as inputs in the backend
-app.use(express.json());
+app.use(express.json());    // <-- this is essentially where we create the application
+app.use(cookieParser());   //This allows us to extract the cookie from the browser
 
 //listen to port 3000, that's where the server is running(can be 3000 or any other)
 app.listen( 3000, () => {
