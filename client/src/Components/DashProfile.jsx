@@ -8,6 +8,10 @@ import { app } from '../firebase';  //app is initialized and exported in firebas
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
+//For update functionality
+import { updateStart, updateSuccess, updateFailure } from '../redux/user/userSlice'
+import { useDispatch } from 'react-redux'
+
 export default function DashProfile() {
 
     const {currentUser} = useSelector(state => state.user)
@@ -15,7 +19,12 @@ export default function DashProfile() {
     const [ imageFileUrl, setImageFileUrl ] = useState(null);   //to convert the image into a temporary image url
     const [ imageFileUploadProgress, setImageFileUploadProgress ] = useState(null);
     const [ imageFileUploadError , setImageFileUploadError ] = useState(null);
+    const [ imageFileUploading , setImageFileUploading ] = useState(false); 
+    const [ updateUserSuccess , setUpdateUserSuccess ] = useState(null);
+    const [ updateUserError, setupdateUserError ] = useState(null);
     const filePickerRef = useRef();
+    const [ formData, setFormData ] = useState({});
+    const dispatch = useDispatch();
 
     const handleImageChange  = (e) => {
         const file = e.target.files[0]  //since we're only uploading one file, we want to select the first one(Hence [0])
@@ -43,6 +52,7 @@ export default function DashProfile() {
     }
     */
     const uploadImage = async () => {
+        setImageFileUploading(true);    //set to true wen image upload process starts
         setImageFileUploadError(null);
         const storage = getStorage(app);    //to acess the firebase storage of 'app'
         const fileName = new Date().getTime() + imageFile.name; //a user could upload several images with the same name, but we want to make it unique. so we add new Date().getTime() and then it will act as extra info making the filename unique as the date/time is always unique
@@ -59,19 +69,61 @@ export default function DashProfile() {
                 setImageFileUploadProgress(null);
                 setImageFile(null);
                 setImageFileUrl(null);
+                setImageFileUploading(false);   //set to false when there's an error
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL)=>{
                     setImageFileUrl(downloadURL);
+                    setFormData({ ...formData, profilePicture: downloadURL });
+                    setImageFileUploading(false);   //set to false when image upload is completely successful
                 });
             }
         )
+    }
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value});
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault(); //to stop the deault paage refresh caused by submitting
+        updateUserError(null);
+        updateUserSuccess(null);
+        if( Object.keys(formData).length === 0 ) {  //to check if the formData object is empty. (if submit is done without changing any data.)
+            setupdateUserError("No changes made");
+            return;
+        }
+        if(imageFileUploading){ //if the image is still uploading (true) 
+            setupdateUserError("Please wait for image to uplaod");
+            return;             
+        }
+        //process won't start until image uploading is complete
+        try {
+            dispatch(updateStart());
+            //the data for the response(res) will be fetched from this dynamic url cuz we wanna send the info for the id of the user we wanna update
+            const res = await fetch(`api/user/update/${currentUser._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            const data = await res.json(); 
+            if(!res.ok){    //there is an error
+                dispatch(updateFailure(data.message));
+                setupdateUserError(data.message)
+            }else{
+                dispatch(updateSuccess(data)); //if the update is successful we pass the data
+                setUpdateUserSuccess("User profile updated successfully");
+            }
+        } catch (error) {
+            dispatch(dispatchFailure(error.message));
+            setupdateUserError(error.message);
+        }
     }
 
     return (
     <div className='max-w-lg mx-auto p-3 w-full'>
         <h1 className='my-7 text-center font-semibold text-3xl'>Profile</h1>
-        <form className='flex flex-col gap-4'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
             <input type="file" accept='image/*' onChange={handleImageChange} ref={filePickerRef} hidden/>  {/* to upload an image type file */}
             {/* when we click on this⬇️ div we want to call this⬆️ reference. So essentially when we click on the div, we'll be clicking on the input. */}
             <div className='relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full' onClick={()=>filePickerRef.current.click()}>
@@ -98,15 +150,21 @@ export default function DashProfile() {
             {imageFileUploadError && (
                 <Alert color='failure'>{imageFileUploadError}</Alert>
             )   }
-            <TextInput type='text' id='username' placeholder='username' defaultValue={currentUser.username}/>
-            <TextInput type='email' id='email' placeholder='email' defaultValue={currentUser.email}/>
-            <TextInput type='password' id='password' placeholder='password'/>
+            <TextInput type='text' id='username' placeholder='username' defaultValue={currentUser.username} onChange={handleChange}/>
+            <TextInput type='email' id='email' placeholder='email' defaultValue={currentUser.email} onChange={handleChange}/>
+            <TextInput type='password' id='password' placeholder='password' onChange={handleChange}/>
             <Button type='submit' gradientDuoTone='greenToBlue' outline>Update</Button>
         </form>
         <div className='text-red-500 flex justify-between mt-5'>
             <span className='cursor-pointer'>Delete Account</span>
             <span className='cursor-pointer'>Sign Out</span>
         </div>
+        { updateUserSuccess  &&  (
+            <Alert color='success' className='mt-5'>{updateUserSuccess}</Alert>
+        )}
+        { updateUserError && (
+            <Alert color='failure' className='mt-5'>{updateUserError}</Alert>
+        )}
     </div>
   )
 }

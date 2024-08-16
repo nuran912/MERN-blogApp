@@ -8,7 +8,6 @@ export const test = (req,res) => {
 //for a get request, use 'get' . 'req' is the data we send to the api. 
 //'res' is the data we receive from the api.
 
-
 export const updateUser = async (req,res,next) => {
     // req.user.id is the user id we get from the cookie. req.params.userId is the user id we get from the route request/url
     if(req.user.id !== req.params.userId){  //if these two are equal, it means the request is valid(the person who is making the request is the owner of the cookie)
@@ -33,23 +32,34 @@ export const updateUser = async (req,res,next) => {
         if(!req.body.username.match(/^[a-zA-Z0-9]+$/)){
             return next(errorHandler(400, 'Username can only contain letters and numbers'))
         }
-        try{
-            const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
-                $set: { //  <- this will update the whatever is included below
-                    username: req.body.username,    //if there is a username to update, update it
-                    email: req.body.email,
-                    profilePicture: req.body.profilePicture,
-                    password: req.body.password,
-                },  //this will return the previous info
-            }, { new: true })   //when we use 'new: true' it will return the updated info
-            const { password, ...rest } = updatedUser._doc; //to seperate the password from the rest as we don't wana send that back
-            res.status(200).json(rest); //response
-        } catch (error) {
-            next(error);
-        }
+    }
+    try{
+        const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
+            $set: { //  <- this will update the whatever is included below
+                username: req.body.username,    //if there is a username to update, update it
+                email: req.body.email,
+                profilePicture: req.body.profilePicture,
+                password: req.body.password,
+            },  //this will return the previous info
+        }, { new: true })   //when we use 'new: true' it will return the updated info
+        const { password, ...rest } = updatedUser._doc; //to seperate the password from the rest as we don't wana send that back
+        res.status(200).json(rest); //response
+    } catch (error) {
+        next(error);
     }
 }
 
+export const deleteUser = async (req,res,next) => {
+    if(req.user.id !== req.params.userId){
+        return next(errorHandler(403, 'You are not allowed to delete this user account'));
+    }
+    try{
+        await User.findByIdAndDelete(req.params.userId);
+        res.status(200).json('User has been deleted');
+    }catch (error) {
+        next(error);
+    }
+}
 
 //we use seperate controller files in a controller folder cuz,
 //these functions sometimes have a lot of logic to them.
