@@ -67,3 +67,6 @@ export const {
 } = userSlice.actions;  
 
 export default userSlice.reducer;   //reducer is exported nd added to store.js
+
+
+//test
