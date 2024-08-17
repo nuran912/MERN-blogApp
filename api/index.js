@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';   //cookie-parser is installed in the back end using 'npm i cookie-parser' and initialized in this file
- 
+import postRoutes from './routes/post.route.js' 
+
 dotenv.config();
 
 //mongoose.connect() method is used to connect to the database.but we need a mongodb uri to connect to it, we need to create that in the mongodb website
@@ -35,6 +36,7 @@ app.listen( 3000, () => {
 //using the 'use' method cus we're getting the 'get' request from 'user.route.js' using 'userRoutes'
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/post', postRoutes);
 
 //this middleware gives us: error we get from the input,request(sending info),response(getting info),next(the next middleware).
 app.use((err, req, res, next ) => {

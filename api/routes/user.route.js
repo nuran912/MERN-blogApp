@@ -3,7 +3,7 @@ import express from 'express';
 import { test, updateUser, deleteUser, signout } from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/verifyUser.js';
 
-const router = express.Router();
+const router = express.Router(); 
 
 //'test' api route:
 //for a get request, use 'get' . 'req' is the data we send to the api. 'res' is the data we receive from the api.
