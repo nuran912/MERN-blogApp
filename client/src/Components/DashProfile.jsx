@@ -9,7 +9,7 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 //For update functionality
-import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../redux/user/userSlice'
+import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signoutSuccess } from '../redux/user/userSlice'
 import { useDispatch } from 'react-redux';
 
 //For delete user functionality
@@ -105,7 +105,7 @@ export default function DashProfile() {
         try {
             dispatch(updateStart());
             //the data for the response(res) will be fetched from this dynamic url cuz we wanna send the info for the id of the user we wanna update
-            const res = await fetch(`api/user/update/${currentUser._id}`, {
+            const res = await fetch(`api/user/update/${currentUser._id}`, { //this is the response for the api route
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export default function DashProfile() {
             const data = await res.json(); 
             if(!res.ok){    //there is an error
                 dispatch(updateFailure(data.message));
-                setupdateUserError(data.message)
+                setUpdateUserError(data.message)
             }else{
                 dispatch(updateSuccess(data)); //if the update is successful we pass the data
                 setUpdateUserSuccess("User profile updated successfully");
@@ -140,6 +140,22 @@ export default function DashProfile() {
             }
         } catch (error) {
             dispatch(deleteUserFailure(error.message));
+        }
+    }
+
+    const handleSignout = async () => {
+        try {
+            const res = await fetch('/api/user/signout', {
+                method: 'POST',
+            });
+            const data = res.json();
+            if(!res.ok){
+                console.log(data.message);
+            } else {
+                dispatch(signoutSuccess());
+            }
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
@@ -180,7 +196,7 @@ export default function DashProfile() {
         </form>
         <div className='text-red-500 flex justify-between mt-5'>
             <span onClick={()=>setShowModal(true)} className='cursor-pointer'>Delete Account</span>
-            <span className='cursor-pointer'>Sign Out</span>
+            <span onClick={ handleSignout } className='cursor-pointer'>Sign Out</span>
         </div>
         { updateUserSuccess  &&  (
             <Alert color='success' className='mt-5'>{updateUserSuccess}</Alert>
