@@ -49,7 +49,7 @@ export const signin = async (req,res,next) => {
     }
 
     try {
-        //findOne() method searches if this email exist
+        //findOne() method searches if this email exist within the database
         const validUser = await User.findOne({ email });
         if(!validUser){
            return next(errorHandler(404, 'User not found'));
@@ -64,12 +64,15 @@ export const signin = async (req,res,next) => {
         //if authentication is valid, we create a token using a method from jwt called sign. 
         //whatever we add is gonna be encrypted fot us(kind of like password hashing).this encrypted value can't be read normally. 
         //then we save this encrypted value to the cookie of the browser and use it later on to authenticate user.
-        const token = jwt.sign({ id: validUser._id } , process.env.JWT_SECRET);
+        const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin} , process.env.JWT_SECRET);
             //"_id" is a type of unique id created in mongodb when we create a new user.it can be used for authentication.
             /* we need to add a secret key. it is a unique key only for me(developer). 
                the token will be created and encrypted based on this secret key.
                if someone has this secret key, they can hijack the user's cookie(this cookie is encrypted uniquely by this secret key).  
                it is hidden within .env and JWT_SECRET is used in its place. we add it here using process.env.JWT_SECRET */
+            //isAdmin: validUser.isAdmin is used to specify whether the user is an admin. isAdmin value is strictly changed in the database for security reasons;
+            //  When we send the sign in request, we wanna send both id AND isAdmin  with the cookie cuz we need to identify which users are admins as they have different functionalities
+            //  here in the cookie, it is hashed so we don't have a security concern.
 
         //to seperate the password from the rest of the dtails we get from validUser
         const { password: pass, ...rest} = validUser._doc;
@@ -92,7 +95,7 @@ export const google = async (req,res,next) => {
         //to check if the user exists or not
         const user = await User.findOne({email});
         if(user){
-            const token = jwt.sign({id: user._id}, process.env.JWT_SECRET); //creating  the token
+            const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET); //creating  the token
             const {password, ...rest} = user._doc;  //to seperate the password and the rest
             res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest); //'access_token' is the name of the cookie
         }else{  
@@ -111,7 +114,7 @@ export const google = async (req,res,next) => {
                 profilePicture: googlePhotoURL
             });
             await newUser.save()    //save newUser in the db
-            const token = jwt.sign({id: newUser._id}, process.env.JWT_SECRET);
+            const token = jwt.sign({id: newUser._id, isAdmin: newUser.isAdmin}, process.env.JWT_SECRET);
             const { password, ...rest} = newUser._doc;
             res.status(200).cookie('access_token', token, {httpOnly: true}).json(rest);
         }
