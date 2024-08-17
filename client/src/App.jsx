@@ -10,6 +10,8 @@ import Dashboard from './Pages/Dashboard'
 import Header from './Components/Header'
 import FooterComp from './Components/Footer'
 import PrivateRoute from './Components/PrivateRoute'
+import OnlyAdminPrivateRoute from './Components/OnlyAdminPrivateRoute'
+import CreatePost from './Pages/CreatePost'
 
 export default function App() {
   return (
@@ -22,8 +24,11 @@ export default function App() {
         <Route path="/sign-in" element={<SignIn/>} />
         <Route path="/sign-up" element={<SignUp/>} />
         <Route path="/projects" element={<Projects/>} />
-        <Route element={<PrivateRoute/>}> {/*to make the dashboard private*/}
+        <Route element={<PrivateRoute/>}> {/*to make the dashboard private.    can only be accessed if signed in*/}
           <Route path="/dashboard" element={<Dashboard/>} />
+        </Route>
+        <Route element={<OnlyAdminPrivateRoute/>}>
+          <Route path='/create-post' element={<CreatePost/>} />
         </Route>
       </Routes>
       <FooterComp/>

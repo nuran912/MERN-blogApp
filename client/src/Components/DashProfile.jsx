@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';  //app is initialized and exported in firebase.js
+import { Link } from 'react-router-dom'
 
 //for the circuar progress bar for image upload
 import { CircularProgressbar } from 'react-circular-progressbar';
@@ -17,7 +18,7 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashProfile() {
 
-    const {currentUser, error} = useSelector(state => state.user)
+    const {currentUser, error, loading} = useSelector(state => state.user)
     const [ imageFile, setImageFile ] = useState(null); //to save the image
     const [ imageFileUrl, setImageFileUrl ] = useState(null);   //to convert the image into a temporary image url
     const [ imageFileUploadProgress, setImageFileUploadProgress ] = useState(null);
@@ -192,8 +193,13 @@ export default function DashProfile() {
             <TextInput type='text' id='username' placeholder='username' defaultValue={currentUser.username} onChange={handleChange}/>
             <TextInput type='email' id='email' placeholder='email' defaultValue={currentUser.email} onChange={handleChange}/>
             <TextInput type='password' id='password' placeholder='password' onChange={handleChange}/>
-            <Button type='submit' gradientDuoTone='greenToBlue' outline>Update</Button>
+            <Button type='submit' gradientDuoTone='greenToBlue' outline disabled={loading || imageFileUploading}>{loading ? 'Loeaading...' : 'Update'}</Button>
         </form>
+        { currentUser.isAdmin && (
+            <Link to={'/create-post'}>
+                <Button type='button' gradientDuoTone='greenToBlue' className='w-full mt-4' outline>Create a post</Button>
+            </Link>
+        )}
         <div className='text-red-500 flex justify-between mt-5'>
             <span onClick={()=>setShowModal(true)} className='cursor-pointer'>Delete Account</span>
             <span onClick={ handleSignout } className='cursor-pointer'>Sign Out</span>

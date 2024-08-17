@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+    height: 100vh;
+}
+
+/* .ql-editor refers to the editor part of quill (ReactQuill) in the browser console. 
+   *Inspect create-post browser page to see div with class name ql.editor */
+.ql-editor{
+    font-size: 1.05rem;
+}
