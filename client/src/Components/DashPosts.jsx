@@ -8,7 +8,8 @@ import { Link } from "react-router-dom";
 export default function DashPosts() {
 
   const {currentUser} = useSelector((state) =>state.user);
-  const [ userPosts, setUserPosts ] = useState([])
+  const [ userPosts, setUserPosts ] = useState([]);
+  const [ showMore, setShowMore ] = useState(true);
   console.log(userPosts);
 
   //to get the posts uploaded by the admin that is signed in
@@ -18,7 +19,10 @@ export default function DashPosts() {
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`)  //here we add the query userId cuz that's wha we wanna search. 
         const data = await res.json()
         if(res.ok){
-          setUserPosts(data.posts)
+          setUserPosts(data.posts);
+          if( data.posts.length < 9 ){  //if the no. of posts is < 9 , no need to show 'show more'
+            setShowMore(false);
+          }
         }
       } catch (error) {
         console.log(error.message);
@@ -27,11 +31,29 @@ export default function DashPosts() {
     if(currentUser.isAdmin){
       fetchPosts(); //Since async can't directly be used for useEffect(), we define a createPosts() function and call it inside the useEffect()
     }
-  }, [currentUser._id])
+  }, [currentUser._id]);
+
+  //if user clicks show more, show 9 more posts
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    try {
+      const res = await fetch (`/api/post/getposts?userId=${currentUser._id}&startIndex${startIndex}`); //get the posts after a certain
+      const data = await res.json();
+      if(res.ok){
+        setUserPosts( (prev) => [...prev, ...data.posts] );
+        if(data.posts.length<9){
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+        console.log(error.message)
+    }
+  }
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       { currentUser.isAdmin && userPosts.length > 0 ? (
+        <>
         <Table hoverable className="shadow-md" >
           <Table.Head>
             <Table.HeadCell>Date Updated</Table.HeadCell>
@@ -66,6 +88,10 @@ export default function DashPosts() {
             </Table.Body>
           ))}
         </Table>
+        { showMore && (
+          <button onClick={handleShowMore} className='w-full text-teal-500 self-center text-sm py-7'>Show More</button>
+        )} 
+        </>
       ) : 
       (<p>You have no posts yet</p>)}
     </div>
