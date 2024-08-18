@@ -27,7 +27,7 @@ const postSchema = new mongoose.Schema({
         required: true,
         unique: true,
     }
-}, { timeStamp: true} );
+}, { timestamps: true} );   //to save time of creation and time of update when creating users.
 
 const Post = mongoose.model('Post', postSchema);
 
