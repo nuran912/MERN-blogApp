@@ -8,7 +8,7 @@ const initialState = {
 }
 
 const userSlice = createSlice({
-    name: 'user',
+    name: 'user',   //the name of the global state we create for user sign in
     initialState,
     reducers: { //here we set the logic
         signInStart: (state) => {

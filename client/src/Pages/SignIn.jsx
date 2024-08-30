@@ -12,6 +12,10 @@ export default function SignIn() {
   //const [errorMessage, setErrorMessage] = useState(null);
   //const [loading, setLoading] = useState(false);  //for when the page is loading
   const { loading, error: errorMessage } = useSelector(state => state.user);//useSelector is used to get the 'userSlice' information 
+  {/* state.user -> the global defined in 
+      loading,error -> defined in initialState. these values will be used in this file as required
+      error: errorMessage -> the value we get for error will be refered to as errorMessage in this file*/}
+
   const dispatch = useDispatch(); //dispatch will be used for the logic imported from userSlice.js
 
   const handleChange = (e) => {
@@ -77,7 +81,7 @@ export default function SignIn() {
           <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <div>
               <Label value='your email'/>
-              <TextInput type='emailonChange={handleChange' placeholder='name@company.com' id='email' onChange={handleChange}/>
+              <TextInput type='email' placeholder='name@company.com' id='email' onChange={handleChange}/>
             </div>
             <div>
               <Label value='your password'/>
